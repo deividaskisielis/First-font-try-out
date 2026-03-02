@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Work With Deividas — Let's Talk</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a1628;
+    --navy-mid: #0f1e35;
+    --blue: #2E6DA4;
+    --blue-light: #4a8fc4;
+    --border: rgba(46,109,164,0.2);
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --success: #10b981;
+    --error: #ef4444;
+    --record: #ef4444;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #060d18;
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    overflow-x: hidden;
+  }
+
+  /* Animated background */
+  .bg-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .bg-canvas svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.4;
+  }
+
+  .bg-glow {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(46,109,164,0.07) 0%, transparent 70%);
+    top: -200px;
+    left: -200px;
+    pointer-events: none;
+    animation: floatGlow 8s ease-in-out infinite;
+  }
+
+  .bg-glow-2 {
+    position: fixed;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(46,109,164,0.05) 0%, transparent 70%);
+    bottom: -100px;
+    right: -100px;
+    pointer-events: none;
+    animation: floatGlow 10s ease-in-out infinite reverse;
+  }
+
+  @keyframes floatGlow {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(30px, 20px); }
+  }
+
+  .card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 520px;
+    animation: riseIn 0.7s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Top badge */
+  .top-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+    animation: riseIn 0.7s 0.1s cubic-bezier(0.16,1,0.3,1) both;
+    opacity: 0;
+  }
+
+  .avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--navy-mid), var(--blue));
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .badge-text { display: flex; flex-direction: column; gap: 1px; }
+
+  .badge-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #fff;
+  }
+
+  .badge-role {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .online-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    margin-left: auto;
+    box-shadow: 0 0 8px rgba(16,185,129,0.5);
+    animation: pulse 2s infinite;
+  }
+
+  /* Hero text */
+  .hero {
+    margin-bottom: 36px;
+    animation: riseIn 0.7s 0.15s cubic-bezier(0.16,1,0.3,1) both;
+    opacity: 0;
+  }
+
+  .hero h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(36px, 8vw, 52px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -1px;
+    color: #fff;
+    margin-bottom: 14px;
+  }
+
+  .hero h1 span { color: var(--blue); }
+
+  .hero p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    font-weight: 400;
+  }
+
+  /* Form */
+  .form-wrap {
+    background: rgba(10,22,40,0.8);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    backdrop-filter: blur(12px);
+    animation: riseIn 0.7s 0.2s cubic-bezier(0.16,1,0.3,1) both;
+    opacity: 0;
+  }
+
+  .field { margin-bottom: 20px; }
+
+  .field:last-of-type { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-bottom: 7px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  label .req { color: var(--blue); margin-left: 2px; }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="url"],
+  select,
+  textarea {
+    width: 100%;
+    background: rgba(6,13,24,0.7);
+    border: 1px solid rgba(46,109,164,0.18);
+    border-radius: 10px;
+    padding: 13px 16px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: #fff;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+  }
+
+  input::placeholder, textarea::placeholder { color: #1e3050; }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(46,109,164,0.1);
+  }
+
+  textarea { resize: none; height: 90px; line-height: 1.6; }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+    cursor: pointer;
+  }
+
+  select option { background: #0a1628; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  /* Voice recorder */
+  .voice-section {
+    margin-top: 24px;
+    border-top: 1px solid rgba(46,109,164,0.12);
+    padding-top: 24px;
+  }
+
+  .voice-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .voice-label .title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #94a3b8;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .voice-label .optional {
+    font-size: 10px;
+    color: var(--muted);
+    background: rgba(100,116,139,0.1);
+    border: 1px solid rgba(100,116,139,0.2);
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-weight: 500;
+  }
+
+  .voice-hint {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .voice-hint strong { color: #94a3b8; }
+
+  /* Recorder UI */
+  .recorder-ui {
+    background: rgba(6,13,24,0.8);
+    border: 1px solid rgba(46,109,164,0.18);
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .waveform-wrap {
+    width: 100%;
+    height: 48px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    overflow: hidden;
+  }
+
+  .wave-bar {
+    width: 3px;
+    border-radius: 100px;
+    background: rgba(46,109,164,0.3);
+    height: 8px;
+    transition: height 0.1s;
+    flex-shrink: 0;
+  }
+
+  .wave-bar.active {
+    background: var(--blue);
+    animation: wave var(--delay, 0.5s) ease-in-out infinite alternate;
+  }
+
+  @keyframes wave {
+    from { height: 4px; }
+    to { height: var(--height, 32px); }
+  }
+
+  .rec-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .rec-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .rec-btn.start {
+    background: var(--record);
+    box-shadow: 0 0 0 0 rgba(239,68,68,0.4);
+  }
+
+  .rec-btn.start:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 20px rgba(239,68,68,0.4);
+  }
+
+  .rec-btn.start.recording {
+    animation: recPulse 1.5s infinite;
+  }
+
+  @keyframes recPulse {
+    0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
+    70% { box-shadow: 0 0 0 14px rgba(239,68,68,0); }
+    100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+  }
+
+  .rec-btn.stop {
+    background: rgba(239,68,68,0.15);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: var(--record);
+    display: none;
+  }
+
+  .rec-btn.stop:hover { background: rgba(239,68,68,0.25); }
+
+  .rec-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .rec-status .status-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #94a3b8;
+  }
+
+  .rec-status .timer {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 1px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .rec-status .timer.recording { color: var(--record); }
+
+  /* Playback */
+  .playback-wrap {
+    width: 100%;
+    display: none;
+  }
+
+  .playback-wrap.show { display: block; }
+
+  .playback-inner {
+    background: rgba(46,109,164,0.06);
+    border: 1px solid rgba(46,109,164,0.2);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .play-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--blue);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .play-btn:hover { background: var(--blue-light); }
+
+  .playback-info { flex: 1; min-width: 0; }
+
+  .playback-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-bottom: 2px;
+  }
+
+  .playback-dur {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    color: var(--blue-light);
+    font-weight: 600;
+  }
+
+  .delete-rec {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+    transition: color 0.2s;
+    flex-shrink: 0;
+  }
+
+  .delete-rec:hover { color: var(--error); }
+
+  /* AI processing indicator */
+  .ai-processing {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--blue-light);
+    margin-top: 10px;
+  }
+
+  .ai-processing.show { display: flex; }
+
+  .ai-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--blue);
+    animation: aiPulse 1s infinite;
+  }
+
+  .ai-dot:nth-child(2) { animation-delay: 0.2s; }
+  .ai-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes aiPulse {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+
+  /* Transcript preview */
+  .transcript-preview {
+    display: none;
+    margin-top: 10px;
+    background: rgba(16,185,129,0.05);
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+
+  .transcript-preview.show { display: block; }
+
+  .transcript-preview .t-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--success);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  /* Submit */
+  .submit-wrap {
+    margin-top: 28px;
+  }
+
+  .submit-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #1a4a7a, var(--blue));
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 16px 28px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.25s;
+    letter-spacing: 0.3px;
+  }
+
+  .submit-btn:hover {
+    box-shadow: 0 0 28px rgba(46,109,164,0.35);
+    transform: translateY(-2px);
+  }
+
+  .submit-btn:active { transform: translateY(0); }
+
+  .submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .privacy-note {
+    text-align: center;
+    font-size: 11px;
+    color: #334155;
+    margin-top: 14px;
+    line-height: 1.5;
+  }
+
+  /* Success */
+  .success-wrap {
+    display: none;
+    text-align: center;
+    padding: 20px 0;
+    animation: riseIn 0.5s ease both;
+  }
+
+  .success-wrap.show { display: block; }
+  .form-wrap.submitted .form-fields { display: none; }
+  .form-wrap.submitted .success-wrap { display: block; }
+
+  .success-icon-wrap {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(16,185,129,0.1);
+    border: 2px solid rgba(16,185,129,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin: 0 auto 20px;
+    animation: scaleIn 0.4s 0.1s ease both;
+    opacity: 0;
+  }
+
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.5); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .success-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 10px;
+  }
+
+  .success-msg {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+
+  /* Error */
+  .field-error {
+    font-size: 11px;
+    color: var(--error);
+    margin-top: 5px;
+    display: none;
+  }
+
+  .field-error.show { display: block; }
+  input.err, textarea.err, select.err {
+    border-color: var(--error) !important;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  @media (max-width: 520px) {
+    .two-col { grid-template-columns: 1fr; }
+    .form-wrap { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Animated background -->
+<div class="bg-canvas">
+  <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <g stroke="#1a3a5c" stroke-width="1" fill="none">
+      <line x1="0" y1="200" x2="1200" y2="200"/>
+      <line x1="0" y1="400" x2="1200" y2="400"/>
+      <line x1="0" y1="600" x2="1200" y2="600"/>
+      <line x1="200" y1="0" x2="200" y2="800"/>
+      <line x1="400" y1="0" x2="400" y2="800"/>
+      <line x1="600" y1="0" x2="600" y2="800"/>
+      <line x1="800" y1="0" x2="800" y2="800"/>
+      <line x1="1000" y1="0" x2="1000" y2="800"/>
+    </g>
+    <g stroke="#2E6DA4" stroke-width="1" fill="none" opacity="0.5">
+      <circle cx="200" cy="200" r="6"/><circle cx="400" cy="400" r="6"/>
+      <circle cx="600" cy="200" r="6"/><circle cx="800" cy="600" r="6"/>
+      <circle cx="1000" cy="400" r="6"/><circle cx="200" cy="600" r="4"/>
+      <circle cx="1000" cy="200" r="4"/><circle cx="600" cy="600" r="4"/>
+    </g>
+    <g stroke="#2E6DA4" stroke-width="1.5" fill="none" opacity="0.3">
+      <line x1="200" y1="200" x2="400" y2="400"/>
+      <line x1="400" y1="400" x2="600" y2="200"/>
+      <line x1="600" y1="200" x2="800" y2="600"/>
+      <line x1="800" y1="600" x2="1000" y2="400"/>
+    </g>
+  </svg>
+</div>
+<div class="bg-glow"></div>
+<div class="bg-glow-2"></div>
+
+<div class="card">
+
+  <!-- Top badge -->
+  <div class="top-badge">
+    <div class="avatar">DK</div>
+    <div class="badge-text">
+      <div class="badge-name">Deividas Kisielis</div>
+      <div class="badge-role">LinkedIn Growth Systems</div>
+    </div>
+    <div class="online-dot"></div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>Ready to build<br>your <span>system?</span></h1>
+    <p>Tell me about your business in 60 seconds — text or voice. I'll review it personally and get back to you within 24 hours.</p>
+  </div>
+
+  <!-- Form -->
+  <div class="form-wrap" id="form-wrap">
+
+    <div class="form-fields">
+      <div class="two-col">
+        <div class="field">
+          <label>First Name <span class="req">*</span></label>
+          <input type="text" id="first-name" placeholder="Thomas" />
+          <div class="field-error" id="err-name">Required</div>
+        </div>
+        <div class="field">
+          <label>Email <span class="req">*</span></label>
+          <input type="email" id="email" placeholder="thomas@company.com" />
+          <div class="field-error" id="err-email">Valid email required</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="field">
+          <label>Industry <span class="req">*</span></label>
+          <select id="industry">
+            <option value="">Select</option>
+            <option>B2B SaaS / Tech</option>
+            <option>Consulting / Advisory</option>
+            <option>Coaching / Training</option>
+            <option>Manufacturing</option>
+            <option>Financial Services</option>
+            <option>Marketing / Agency</option>
+            <option>Healthcare</option>
+            <option>Logistics</option>
+            <option>Legal</option>
+            <option>Other</option>
+          </select>
+          <div class="field-error" id="err-industry">Required</div>
+        </div>
+        <div class="field">
+          <label>Company / Website</label>
+          <input type="text" id="company-url" placeholder="company.com or name" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Quick message</label>
+        <textarea id="message" placeholder="What's your current LinkedIn situation and what are you trying to achieve? Even 2-3 sentences works."></textarea>
+      </div>
+
+      <!-- Voice recorder section -->
+      <div class="voice-section">
+        <div class="voice-label">
+          <div class="title">Voice Message</div>
+          <div class="optional">Optional</div>
+        </div>
+        <div class="voice-hint">
+          Prefer talking over typing? Record up to <strong>90 seconds</strong>. Our AI will transcribe and summarize it automatically — no extra work for you.
+        </div>
+
+        <div class="recorder-ui">
+
+          <!-- Waveform -->
+          <div class="waveform-wrap" id="waveform">
+            <!-- bars generated by JS -->
+          </div>
+
+          <!-- Controls -->
+          <div class="rec-controls">
+            <button class="rec-btn start" id="rec-start-btn" onclick="toggleRecording()" title="Start recording">
+              🎙️
+            </button>
+            <div class="rec-status">
+              <div class="status-text" id="rec-status-text">Tap to record</div>
+              <div class="timer" id="rec-timer">0:00</div>
+            </div>
+          </div>
+
+          <!-- Playback -->
+          <div class="playback-wrap" id="playback-wrap">
+            <div class="playback-inner">
+              <button class="play-btn" id="play-btn" onclick="playRecording()">▶</button>
+              <div class="playback-info">
+                <div class="playback-name">Voice message recorded</div>
+                <div class="playback-dur" id="playback-dur">0:00</div>
+              </div>
+              <button class="delete-rec" onclick="deleteRecording()" title="Delete recording">✕</button>
+            </div>
+          </div>
+
+          <!-- AI processing -->
+          <div class="ai-processing" id="ai-processing">
+            <div class="ai-dot"></div>
+            <div class="ai-dot"></div>
+            <div class="ai-dot"></div>
+            <span>AI is transcribing your message...</span>
+          </div>
+
+          <!-- Transcript preview -->
+          <div class="transcript-preview" id="transcript-preview">
+            <div class="t-label">AI Summary</div>
+            <div id="transcript-text"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="submit-wrap">
+        <button class="submit-btn" id="submit-btn" onclick="submitForm()">
+          <span>Send my details</span>
+          <span>→</span>
+        </button>
+        <div class="privacy-note">No spam. No automated sequences. Deividas reviews every submission personally.</div>
+      </div>
+    </div>
+
+    <!-- Success -->
+    <div class="success-wrap" id="success-wrap">
+      <div class="success-icon-wrap">✓</div>
+      <div class="success-title">Got it.</div>
+      <div class="success-msg">Your message is in. Deividas will review it and get back to you within 24 hours with a clear next step — no fluff, no sales scripts.</div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  // ── Waveform bars ──
+  const wf = document.getElementById('waveform');
+  for (let i = 0; i < 48; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'wave-bar';
+    wf.appendChild(bar);
+  }
+
+  // ── Recording state ──
+  let mediaRecorder = null;
+  let audioChunks = [];
+  let audioBlob = null;
+  let audioUrl = null;
+  let audioEl = null;
+  let isRecording = false;
+  let timerInterval = null;
+  let seconds = 0;
+  let waveInterval = null;
+  const MAX_SECONDS = 90;
+
+  function formatTime(s) {
+    return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+  }
+
+  async function toggleRecording() {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      await startRecording();
+    }
+  }
+
+  async function startRecording() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+
+      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+      mediaRecorder.onstop = handleRecordingStop;
+      mediaRecorder.start();
+
+      isRecording = true;
+      seconds = 0;
+
+      // UI
+      document.getElementById('rec-start-btn').classList.add('recording');
+      document.getElementById('rec-start-btn').innerHTML = '⏹';
+      document.getElementById('rec-status-text').textContent = 'Recording...';
+      document.getElementById('rec-timer').classList.add('recording');
+
+      // Timer
+      timerInterval = setInterval(() => {
+        seconds++;
+        document.getElementById('rec-timer').textContent = formatTime(seconds);
+        if (seconds >= MAX_SECONDS) stopRecording();
+      }, 1000);
+
+      // Animate waveform
+      const bars = document.querySelectorAll('.wave-bar');
+      waveInterval = setInterval(() => {
+        bars.forEach(bar => {
+          const h = Math.random() * 36 + 4;
+          bar.style.setProperty('--height', h + 'px');
+          bar.style.height = h + 'px';
+          bar.style.background = `rgba(46,109,164,${0.4 + Math.random() * 0.6})`;
+        });
+      }, 80);
+
+    } catch (err) {
+      alert('Microphone access needed to record. Please allow microphone permission and try again.');
+    }
+  }
+
+  function stopRecording() {
+    if (!mediaRecorder) return;
+    mediaRecorder.stop();
+    mediaRecorder.stream.getTracks().forEach(t => t.stop());
+    isRecording = false;
+
+    clearInterval(timerInterval);
+    clearInterval(waveInterval);
+
+    // Reset waveform
+    document.querySelectorAll('.wave-bar').forEach(bar => {
+      bar.style.height = '8px';
+      bar.style.background = 'rgba(46,109,164,0.3)';
+    });
+
+    // UI
+    document.getElementById('rec-start-btn').classList.remove('recording');
+    document.getElementById('rec-start-btn').innerHTML = '🎙️';
+    document.getElementById('rec-timer').classList.remove('recording');
+    document.getElementById('rec-status-text').textContent = 'Tap to record';
+  }
+
+  function handleRecordingStop() {
+    audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+    audioUrl = URL.createObjectURL(audioBlob);
+    audioEl = new Audio(audioUrl);
+
+    const dur = formatTime(seconds);
+    document.getElementById('playback-dur').textContent = dur;
+    document.getElementById('playback-wrap').classList.add('show');
+    document.getElementById('rec-start-btn').style.display = 'none';
+    document.getElementById('rec-status-text').textContent = 'Recorded';
+    document.getElementById('rec-timer').textContent = dur;
+
+    // Simulate AI transcription (in production, send to Whisper API via n8n)
+    simulateTranscription();
+  }
+
+  function playRecording() {
+    if (audioEl) {
+      audioEl.currentTime = 0;
+      audioEl.play();
+      document.getElementById('play-btn').textContent = '⏸';
+      audioEl.onended = () => { document.getElementById('play-btn').textContent = '▶'; };
+    }
+  }
+
+  function deleteRecording() {
+    audioBlob = null;
+    audioUrl = null;
+    audioEl = null;
+    seconds = 0;
+    document.getElementById('playback-wrap').classList.remove('show');
+    document.getElementById('rec-start-btn').style.display = 'flex';
+    document.getElementById('rec-status-text').textContent = 'Tap to record';
+    document.getElementById('rec-timer').textContent = '0:00';
+    document.getElementById('transcript-preview').classList.remove('show');
+    document.getElementById('ai-processing').classList.remove('show');
+  }
+
+  function simulateTranscription() {
+    // Show processing indicator
+    document.getElementById('ai-processing').classList.add('show');
+
+    // In production: POST audioBlob to n8n webhook → Whisper API → return transcript
+    // For demo: show after 2 seconds
+    setTimeout(() => {
+      document.getElementById('ai-processing').classList.remove('show');
+      document.getElementById('transcript-text').textContent =
+        'Voice message recorded successfully. AI summary will be generated when submitted and sent to your inbox alongside the full transcript.';
+      document.getElementById('transcript-preview').classList.add('show');
+    }, 2000);
+  }
+
+  // ── Form validation ──
+  function validate() {
+    let ok = true;
+    document.querySelectorAll('.field-error').forEach(e => e.classList.remove('show'));
+    document.querySelectorAll('.err').forEach(e => e.classList.remove('err'));
+
+    const name = document.getElementById('first-name');
+    const email = document.getElementById('email');
+    const industry = document.getElementById('industry');
+
+    if (!name.value.trim()) {
+      name.classList.add('err');
+      document.getElementById('err-name').classList.add('show');
+      ok = false;
+    }
+    if (!email.value.includes('@')) {
+      email.classList.add('err');
+      document.getElementById('err-email').classList.add('show');
+      ok = false;
+    }
+    if (!industry.value) {
+      industry.classList.add('err');
+      document.getElementById('err-industry').classList.add('show');
+      ok = false;
+    }
+    return ok;
+  }
+
+  // ── Submit ──
+  async function submitForm() {
+    if (!validate()) return;
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span>Sending...</span>';
+
+    const data = {
+      first_name: document.getElementById('first-name').value,
+      email: document.getElementById('email').value,
+      industry: document.getElementById('industry').value,
+      company_url: document.getElementById('company-url').value,
+      message: document.getElementById('message').value,
+      has_voice_message: !!audioBlob,
+      submitted_at: new Date().toISOString(),
+      source: 'interest_form'
+    };
+
+    try {
+      const WEBHOOK_URL = 'https://deividaskisielis.app.n8n.cloud/webhook-test/a9c95a88-3e18-4ae5-9f83-22ead39e6862';
+
+      if (WEBHOOK_URL !== 'YOUR_N8N_WEBHOOK_URL_HERE') {
+        const formData = new FormData();
+        formData.append('data', JSON.stringify(data));
+        if (audioBlob) formData.append('voice_message', audioBlob, 'voice.webm');
+
+        await fetch(WEBHOOK_URL, { method: 'POST', body: formData });
+      }
+
+      // Show success
+      document.querySelector('.form-fields').style.display = 'none';
+      document.getElementById('success-wrap').classList.add('show');
+
+      console.log('Submitted:', data);
+
+    } catch (err) {
+      btn.disabled = false;
+      btn.innerHTML = '<span>Send my details</span><span>→</span>';
+      alert('Something went wrong. Please try again.');
+    }
+  }
+</script>
+</body>
+</html>
